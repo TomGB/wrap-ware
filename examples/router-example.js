@@ -11,21 +11,21 @@ const routerLogic = (url, body) => {
 }
 
 const routerLogging = {
-    before: ([url, body]) => {
+    before: ({ input: [url, body] }) => {
         console.log('router was called with:')
         console.log('url', url);
         console.log('body', body);
     },
-    after: response => {
-        console.log('router responded with', response)
+    after: ({ output }) => {
+        console.log('router responded with', output)
     }
 };
 
 const addIDToBody = {
-    before: ([url, body], next) => {
+    before: ({ input: [url, body], resolve: next }) => {
         const newBody = { ...body, id: 'banana' };
         console.log('adding id to body')
-        return [url, newBody];
+        next([url, newBody]);
     }
 }
 

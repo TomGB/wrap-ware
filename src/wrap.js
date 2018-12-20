@@ -1,59 +1,68 @@
+class MiddlewareController {
+    constructor () {
+        this.input = undefined;
+        this.output = undefined;
+        this.error = undefined;
+        this.wareIndex = 0;
+    }
+}
+
 const isUndefined = item => typeof item === 'undefined';
 
 const wrap = mainFunction => {
     const middlewares = [];
 
+    const controller = new MiddlewareController();
+
     const run = async (...args) => {
         middlewares.reverse();
 
-        let input = args;
-        let response;
-        let wareIndex = 0;
+        controller.input = args;
 
         try {
-            while(wareIndex < middlewares.length) {
-                const before = middlewares[wareIndex++].before;
+            while(controller.wareIndex < middlewares.length) {
+                const before = middlewares[controller.wareIndex++].before;
                 if (!before) continue;
 
                 const middlewareResponse = await new Promise(async (resolve, reject) => {
-                    const output = await before(await input, resolve, reject);
+                    const output = await before({ ...controller, resolve, reject });
                     resolve(output);
                 });
-    
-                if (Array.isArray(middlewareResponse)) input = middlewareResponse;
+
+                if (Array.isArray(middlewareResponse)) controller.input = middlewareResponse;
             }
     
-            response = await mainFunction(...input);
+            controller.output = await mainFunction(...controller.input);
 
-            while(wareIndex > 0) {
-                const after = middlewares[--wareIndex].after;
+            while(controller.wareIndex > 0) {
+                const after = middlewares[--controller.wareIndex].after;
                 if (!after) continue;
 
                 const middlewareResponse = await new Promise(async (resolve, reject) => {
-                    const output = await after(await response, resolve, reject);
+                    const output = await after({ ...controller, resolve, reject });
                     resolve(output);
                 });
     
-                if (!isUndefined(middlewareResponse)) response = middlewareResponse;
+                if (!isUndefined(middlewareResponse)) controller.output = middlewareResponse;
             }
     
-            return response;
+            return controller.output;
         } catch (initialError) {
-            let error = initialError;
+            controller.error = initialError;
 
-            while(wareIndex > 0) {
-                const onError = middlewares[--wareIndex].onError;
+            while(controller.wareIndex > 0) {
+                const onError = middlewares[--controller.wareIndex].onError;
                 if (!onError) continue;
 
                 const middlewareResponse = await new Promise(async (resolve, reject) => {
-                    const output = await onError({ error, input, response }, resolve, reject);
+                    const output = await onError({ ...controller, resolve, reject });
                     resolve(output);
                 });
     
-                if (!isUndefined(middlewareResponse)) error = middlewareResponse;
+                if (!isUndefined(middlewareResponse)) controller.error = middlewareResponse;
             }
 
-            return error;
+            return controller.error;
         }
     };
 

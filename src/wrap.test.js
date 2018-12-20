@@ -55,8 +55,8 @@ describe('wrap middleware', () => {
             callOrder.push('middleware 1 before');
             setTimeout(() => {
                 callOrder.push('middleware 1 async task');
-                resolve()
-            }, 1000);
+                resolve();
+            }, 20);
         });
 
         middleware1.after = async () => {
@@ -121,8 +121,12 @@ describe('wrap middleware', () => {
     
         await wrappedMain('argument 1', 'argument 2');
 
-        expect(middleware1.before).toHaveBeenCalledWith(['argument 1', 'argument 2'], expect.anything(), expect.anything());
-        expect(middleware2.before).toHaveBeenCalledWith(['argument 1', 'argument 2'], expect.anything(), expect.anything());
+        expect(middleware1.before).toHaveBeenCalledWith(expect.objectContaining({
+            input: ['argument 1', 'argument 2'],
+        }));
+        expect(middleware2.before).toHaveBeenCalledWith(expect.objectContaining({
+            input: ['argument 1', 'argument 2'],
+        }));
     });
 
     it('calls each of the afters with the output', async () => {
@@ -135,8 +139,12 @@ describe('wrap middleware', () => {
     
         await wrappedMain();
 
-        expect(middleware1.after).toHaveBeenCalledWith('the main output', expect.anything(), expect.anything());
-        expect(middleware2.after).toHaveBeenCalledWith('the main output', expect.anything(), expect.anything());
+        expect(middleware1.after).toHaveBeenCalledWith(expect.objectContaining({
+            output: 'the main output',
+        }));
+        expect(middleware2.after).toHaveBeenCalledWith(expect.objectContaining({
+            output: 'the main output',
+        }));
     });
 
     it('calls the main with the output of middleware.before', async () => {
@@ -201,40 +209,10 @@ describe('wrap middleware', () => {
     
         await wrappedMain('some data');
 
-        expect(middleware1.onError).toHaveBeenCalledWith({
+        expect(middleware1.onError).toHaveBeenCalledWith(expect.objectContaining({
             error: new Error('problem'),
             input: ['some data'],
-            response: undefined
-        }, expect.anything(), expect.anything());
-    });
-
-    it(`calls the onError middlewares if the main throws an error`, async () => {
-        main = () => { throw new Error('problem'); };
-        middleware1.onError = jest.fn();
-
-        const wrappedMain = wrap(main).use(middleware1);
-    
-        await wrappedMain('some data');
-
-        expect(middleware1.onError).toHaveBeenCalledWith({
-            error: new Error('problem'),
-            input: ['some data'],
-            response: undefined
-        }, expect.anything(), expect.anything());
-    });
-
-    it(`calls the onError middlewares if the main throws an error`, async () => {
-        main = () => { throw new Error('problem'); };
-        middleware1.onError = jest.fn();
-
-        const wrappedMain = wrap(main).use(middleware1);
-    
-        await wrappedMain('some data');
-
-        expect(middleware1.onError).toHaveBeenCalledWith({
-            error: new Error('problem'),
-            input: ['some data'],
-            response: undefined
-        }, expect.anything(), expect.anything());
+            output: undefined
+        }));
     });
 });
