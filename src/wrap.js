@@ -43,8 +43,12 @@ const wrap = mainFunction => {
                 if (!after) continue;
 
                 const middlewareResponse = await new Promise(async (resolve, reject) => {
-                    const output = await after({ ...controller, resolve, reject });
-                    resolve(output);
+                    try {
+                        const output = await after({ ...controller, resolve, reject });
+                        resolve(output);
+                    } catch (error) {
+                        reject(error);
+                    }
                 });
     
                 if (!isUndefined(middlewareResponse)) controller.output = middlewareResponse;
@@ -52,7 +56,6 @@ const wrap = mainFunction => {
     
             return controller.output;
         } catch (initialError) {
-            console.log('initialError', initialError);
             controller.error = initialError;
 
             while(controller.wareIndex > 0) {

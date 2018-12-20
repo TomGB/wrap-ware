@@ -215,4 +215,34 @@ describe('wrap middleware', () => {
             output: undefined
         }));
     });
+
+    it(`calls the onError middlewares if a before throws an error`, async () => {
+        middleware2.before = () => { throw new Error('problem'); };
+        middleware1.onError = jest.fn();
+
+        const wrappedMain = wrap(main).use(middleware2).use(middleware1);
+    
+        await wrappedMain('some data');
+
+        expect(middleware1.onError).toHaveBeenCalledWith(expect.objectContaining({
+            error: new Error('problem'),
+            input: ['some data'],
+            output: undefined
+        }));
+    });
+
+    it.only(`calls the onError middlewares if an after throws an error`, async () => {
+        middleware2.after = () => { throw new Error('problem'); };
+        middleware1.onError = jest.fn();
+
+        const wrappedMain = wrap(main).use(middleware2).use(middleware1);
+    
+        await wrappedMain('some data');
+
+        expect(middleware1.onError).toHaveBeenCalledWith(expect.objectContaining({
+            error: new Error('problem'),
+            input: ['some data'],
+            output: undefined
+        }));
+    });
 });
