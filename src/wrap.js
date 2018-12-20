@@ -25,8 +25,12 @@ const wrap = mainFunction => {
                 if (!before) continue;
 
                 const middlewareResponse = await new Promise(async (resolve, reject) => {
-                    const output = await before({ ...controller, resolve, reject });
-                    resolve(output);
+                    try {
+                        const output = await before({ ...controller, resolve, reject });
+                        resolve(output);
+                    } catch (error) {
+                        reject(error);
+                    }
                 });
 
                 if (Array.isArray(middlewareResponse)) controller.input = middlewareResponse;
@@ -48,6 +52,7 @@ const wrap = mainFunction => {
     
             return controller.output;
         } catch (initialError) {
+            console.log('initialError', initialError);
             controller.error = initialError;
 
             while(controller.wareIndex > 0) {
@@ -55,8 +60,12 @@ const wrap = mainFunction => {
                 if (!onError) continue;
 
                 const middlewareResponse = await new Promise(async (resolve, reject) => {
-                    const output = await onError({ ...controller, resolve, reject });
-                    resolve(output);
+                    try {
+                        const output = await onError({ ...controller, resolve, reject });
+                        resolve(output);
+                    } catch (error) {
+                        reject(error);
+                    }
                 });
     
                 if (!isUndefined(middlewareResponse)) controller.error = middlewareResponse;
