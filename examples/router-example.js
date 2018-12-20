@@ -1,9 +1,12 @@
 const wrap = require('../index');
 
 const routerLogic = (url, body) => {
-    if (url === 'www.google.com' && body.id === 'banana') {
-        console.log('google wants banana');
-        return '🍌';
+    if (url === '/example' && body.id === 'banana') {
+        console.log('example wants banana');
+        return { response: '🍌' };
+    }
+    if (url === '/invalid') {
+        throw new Error(`${url} is invalid`);
     }
 }
 
@@ -27,9 +30,10 @@ const addIDToBody = {
 }
 
 const errorHandling = {
-    onError: (error) => {
-        console.log(error);
-    }
+    onError: ({ error }) => {
+        console.log('handling router error');
+        return { error };
+    },
 }
 
 const router = wrap(routerLogic).use(addIDToBody).use(errorHandling).use(routerLogging);

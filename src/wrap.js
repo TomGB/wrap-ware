@@ -24,7 +24,7 @@ const wrap = mainFunction => {
             }
     
             response = await mainFunction(...input);
-    
+
             while(wareIndex > 0) {
                 const after = middlewares[--wareIndex].after;
                 if (!after) continue;
