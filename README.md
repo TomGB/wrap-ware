@@ -12,11 +12,11 @@ Then the middlewares will execute the `after` function from left to right.
 
 ## Install
 
-`npm install middy`
+`npm install wrap-ware`
 
-or
+## Use
 
-`yarn add middy`
+`const wrap = require('wrap-ware);`
 
 ## API
 
@@ -28,30 +28,34 @@ const wrappedMain = wrap(main).use(middleware);
 
 Will be passed the arguments that you call `wrappedMain` with.
 
-`middleware` = object of `before`, `after`, `onError`;
+`middleware` = object with some of these functions: `before`, `after`, `onError`.
 
 ---
 
-`before` / `after` = callback `middleware.before = (args, resolve, reject) => ['arg1', 'arg2']`
+`before` / `after` = callback `({ input, output, error, resolve, reject }) => ['arg1', 'arg2']`
 
-`args` = [] of the args that `wrappedMain` was called with.
+`input` = [] of the args that `wrappedMain` was called with.
+
+`output` = the return value of the wrappedMain function.
+
+`error` = the return value of the wrappedMain function when an error has been thrown.
 
 `resolve` = callback which accepts an [] of args. This will be used to call the next middleware.
 
 `reject` = callback to trigger the onError method of the next middleware.
 
-The `before` / `after` function can also simply return an array rather than calling the `next` callback.
+The controller object can be modified to affect the subsequent middlewares.
+The `before` / `after` function can also simply return an array rather than calling the `resolve` callback.
 
 ---
 
-`onError` = callback `middleware.onError = ({ error, input, response }, resolve, reject)`
+`onError` = callback `({ input, output, error, input, response }) => `
 
-`error` = the thrown error from either the main or another middleware.
+`error` = the return value of the wrappedMain function when an error has been thrown.
 
-`resolve` = callback - this will be used to call the next middleware.
+`resolve` = callback which accepts an [] of args. This will be used to call the next middleware.
 
 `reject` = callback to skip the remaining onError methods of the middlewares and throws to where `wrap(core)()` was executed
-
 
 ## Example
 
@@ -73,7 +77,7 @@ const routerLogic = (url, body) => {
 
 ```
 const addIDToBody = {
-    before: ([url, body], next) => {
+    before: ({ input: [url, body], resolve }) => {
         const newBody = { ...body, id: 'banana' };
         console.log('adding id to body')
         return [url, newBody];

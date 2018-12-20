@@ -67,6 +67,14 @@ const wrap = mainFunction => {
     };
 
     run.use = middleware => {
+        if (!middleware || typeof middleware !== 'object') {
+            throw new Error('Middleware must be an object');
+        }
+        const { before, after, onError } = middleware;
+        if (!before && !after && !onError) {
+            throw new Error('Middleware must have a before, after or onError');
+        }
+
         middlewares.push(middleware);
         return run;
     }
