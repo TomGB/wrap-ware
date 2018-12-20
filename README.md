@@ -6,7 +6,7 @@ Wrap the core function using `wrap(core)`, then add middlewares using `add(middl
 
 `const handler = wrap(core).add(middleware2).add(middleware1)`
 
-The middlewares will execute the `before` function from rigth to left.
+The middlewares will execute the `before` function from right to left.
 Then the core will execute.
 Then the middlewares will execute the `after` function from left to right.
 
