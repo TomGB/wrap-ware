@@ -45,8 +45,8 @@ const wrap = mainFunction => {
                 const onError = middlewares[--wareIndex].onError;
                 if (!onError) continue;
 
-                const middlewareResponse = await new Promise(async (resolve) => {
-                    const output = await onError({ error, input, response }, resolve);
+                const middlewareResponse = await new Promise(async (resolve, reject) => {
+                    const output = await onError({ error, input, response }, resolve, reject);
                     resolve(output);
                 });
     

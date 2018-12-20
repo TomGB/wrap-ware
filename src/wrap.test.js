@@ -142,7 +142,7 @@ describe('wrap middleware', () => {
     it('calls the main with the output of middleware.before', async () => {
         main = jest.fn();
     
-        middleware1.before =  () => ['arg 1', 'arg 2'];
+        middleware1.before = () => ['arg 1', 'arg 2'];
 
         const wrappedMain = wrap(main).use(middleware1);
     
@@ -201,7 +201,11 @@ describe('wrap middleware', () => {
     
         await wrappedMain('some data');
 
-        expect(middleware1.onError).toHaveBeenCalledWith({ error: new Error('problem'), input: ['some data'], response: undefined }, expect.anything());
+        expect(middleware1.onError).toHaveBeenCalledWith({
+            error: new Error('problem'),
+            input: ['some data'],
+            response: undefined
+        }, expect.anything(), expect.anything());
     });
 
     it(`calls the onError middlewares if the main throws an error`, async () => {
@@ -216,7 +220,7 @@ describe('wrap middleware', () => {
             error: new Error('problem'),
             input: ['some data'],
             response: undefined
-        }, expect.anything());
+        }, expect.anything(), expect.anything());
     });
 
     it(`calls the onError middlewares if the main throws an error`, async () => {
@@ -231,6 +235,6 @@ describe('wrap middleware', () => {
             error: new Error('problem'),
             input: ['some data'],
             response: undefined
-        }, expect.anything());
+        }, expect.anything(), expect.anything());
     });
 });
