@@ -12,9 +12,13 @@
   },
   "keywords": [
     "middleware",
-    "javascript",
+    "middy",
     "promise",
-    "async"
+    "async",
+    "await",
+    "wrap",
+    "ware",
+    "javascript"
   ],
   "author": "Thomas Banister",
   "license": "MIT",
