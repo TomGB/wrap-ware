@@ -231,7 +231,7 @@ describe('wrap middleware', () => {
         }));
     });
 
-    it.only(`calls the onError middlewares if an after throws an error`, async () => {
+    it(`calls the onError middlewares if an after throws an error`, async () => {
         middleware2.after = () => { throw new Error('problem'); };
         middleware1.onError = jest.fn();
 
@@ -244,5 +244,27 @@ describe('wrap middleware', () => {
             input: ['some data'],
             output: undefined
         }));
+    });
+
+    it(`throws an error if the middleware does not have a before, after or onError function`, async () => {
+        middleware1 = {};
+
+        const setup = () => {
+            wrap(main).use(middleware1)
+        };
+
+        expect(setup).toThrow(Error('Middleware must have a before, after or onError'));
+    });
+
+    it(`throws an error if the middleware's properties are not functions`, async () => {
+        middleware1 = {
+            before: 'not a function',
+        };
+
+        const setup = () => {
+            wrap(main).use(middleware1)
+        };
+
+        expect(setup).toThrow(Error(`Middleware 'before' must be a function or undefined`));
     });
 });

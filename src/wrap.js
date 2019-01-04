@@ -9,6 +9,8 @@ class MiddlewareController {
 
 const isUndefined = item => typeof item === 'undefined';
 
+const isUndefinedOrFunction = possibleFn => typeof possibleFn === 'undefined' || typeof possibleFn === 'function';
+
 const wrap = mainFunction => {
     const middlewares = [];
 
@@ -85,6 +87,16 @@ const wrap = mainFunction => {
         const { before, after, onError } = middleware;
         if (!before && !after && !onError) {
             throw new Error('Middleware must have a before, after or onError');
+        }
+
+        if (!isUndefinedOrFunction(before)) {
+            throw new Error(`Middleware 'before' must be a function or undefined`);
+        }
+        if (!isUndefinedOrFunction(after)) {
+            throw new Error(`Middleware 'after' must be a function or undefined`);
+        }
+        if (!isUndefinedOrFunction(onError)) {
+            throw new Error(`Middleware 'onError' must be a function or undefined`);
         }
 
         middlewares.push(middleware);
