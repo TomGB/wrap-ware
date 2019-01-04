@@ -267,4 +267,85 @@ describe('wrap middleware', () => {
 
         expect(setup).toThrow(Error(`Middleware 'before' must be a function or undefined`));
     });
+
+    it(`wrap().before(fn) accepts a function and creates a middleware which executes the before step`, async () => {
+        const callOrder = [];
+
+        const beforeFn = () => callOrder.push('before called');
+        main = () => callOrder.push('main');
+
+        const wrappedMain = wrap(main).before(beforeFn);
+    
+        await wrappedMain();
+
+        expect(callOrder).toEqual([
+            'before called',
+            'main',
+        ]);
+    });
+
+    it(`wrap().after(fn) accepts a function and creates a middleware which executes the after step`, async () => {
+        const callOrder = [];
+
+        const afterFn = () => callOrder.push('after called');
+        main = () => callOrder.push('main');
+
+        const wrappedMain = wrap(main).after(afterFn);
+    
+        await wrappedMain();
+
+        expect(callOrder).toEqual([
+            'main',
+            'after called',
+        ]);
+    });
+
+    it(`wrap().onError(fn) accepts a function and creates a middleware which executes the onError step`, async () => {
+        const callOrder = [];
+
+        const onError = () => callOrder.push('onError called');
+        main = () => {
+            callOrder.push('main');
+            throw new Error('problem');
+        }
+
+        const wrappedMain = wrap(main).onError(onError);
+    
+        await wrappedMain();
+
+        expect(callOrder).toEqual([
+            'main',
+            'onError called',
+        ]);
+    });
+
+    it(`wrap().before(fn) throws an error if the variable passed to before is not a function`, async () => {
+        const beforeFn = 'not a function';
+
+        const setup = () => {
+            wrap(main).before(beforeFn);
+        };
+
+        expect(setup).toThrow(Error(`Middleware 'before' must be a function or undefined`));
+    });
+
+    it(`wrap().after() throws an error if the variable passed to after is not a function`, async () => {
+        const afterFn = 'not a function';
+
+        const setup = () => {
+            wrap(main).after(afterFn);
+        };
+
+        expect(setup).toThrow(Error(`Middleware 'after' must be a function or undefined`));
+    });
+
+    it(`wrap().onError() throws an error if the variable passed to onError is not a function`, async () => {
+        const onErrorFn = 'not a function';
+
+        const setup = () => {
+            wrap(main).onError(onErrorFn);
+        };
+
+        expect(setup).toThrow(Error(`Middleware 'onError' must be a function or undefined`));
+    });
 });

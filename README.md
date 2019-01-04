@@ -2,25 +2,26 @@
 
 A middleware wrapper which works with promises / async
 
-Wrap the core function using `wrap(core)`, then add middlewares using `add(middleware)`.
+Wrap the main function using `wrap(main)`, then add middlewares using `use(middleware)`.
 
-`const handler = wrap(core).add(middleware2).add(middleware1)`
+`const handler = wrap(main).use(middleware2).use(middleware1)`
 
 The middlewares will execute the `before` function from right to left.
-Then the core will execute.
+Then the main will execute.
 Then the middlewares will execute the `after` function from left to right.
+
+## Example
+
+An example can be found here: [router example](https://github.com/TomGB/wrap-ware/blob/f82b173147a683004e79bf4292de34c83303e6d6/examples/router-example.js#L39)
 
 ## Install
 
 `npm install wrap-ware`
 
-## Use
-
-`const wrap = require('wrap-ware);`
-
-## API
+## API / Usage
 
 ```
+const wrap = require('wrap-ware);
 const wrappedMain = wrap(main).use(middleware);
 ```
 
@@ -29,6 +30,10 @@ const wrappedMain = wrap(main).use(middleware);
 Will be passed the arguments that you call `wrappedMain` with.
 
 `middleware` = object with some of these functions: `before`, `after`, `onError`.
+
+`wrap` also exposes the functions `.before(fn)`, `.after(fn)` and `.onError(fn)`.
+
+returns an instance of `wrap` which allows further `.use(fn)` to be added.
 
 ---
 

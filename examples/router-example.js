@@ -21,21 +21,17 @@ const routerLogging = {
     }
 };
 
-const addIDToBody = {
-    before: ({ input: [url, body], resolve: next }) => {
-        const newBody = { ...body, id: 'banana' };
-        console.log('adding id to body')
-        next([url, newBody]);
-    }
-}
+const addIDToBody =  ({ input: [url, body], resolve: next }) => {
+    const newBody = { ...body, id: 'banana' };
+    console.log('adding id to body')
+    next([url, newBody]);
+};
 
-const errorHandling = {
-    onError: ({ error }) => {
-        console.log('handling router error');
-        return { error };
-    },
-}
+const errorHandling = ({ error }) => {
+    console.log('handling router error');
+    return { error };
+};
 
-const router = wrap(routerLogic).use(addIDToBody).use(errorHandling).use(routerLogging);
+const router = wrap(routerLogic).before(addIDToBody).onError(errorHandling).use(routerLogging);
 
 module.exports = router;
