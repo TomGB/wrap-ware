@@ -12,7 +12,7 @@ Then the middlewares will execute the `after` function from left to right.
 
 ## Example
 
-An example can be found here: [router example](https://github.com/TomGB/wrap-ware/blob/f82b173147a683004e79bf4292de34c83303e6d6/examples/router-example.js#L39)
+An example can be found here: [router example](https://github.com/TomGB/wrap-ware/blob/master/examples/router-example.js)
 
 ## Install
 
