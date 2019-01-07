@@ -1,22 +1,24 @@
-class MiddlewareController {
-    constructor () {
-        this.input = undefined;
-        this.output = undefined;
-        this.error = undefined;
-        this.wareIndex = 0;
-    }
-}
-
 const isUndefined = item => typeof item === 'undefined';
-
 const isFunction = possibleFn => typeof possibleFn === 'function';
-
 const isUndefinedOrFunction = possibleFn => typeof possibleFn === 'undefined' || isFunction(possibleFn);
+const wrapInPromise = async fn => new Promise(async (resolve, reject) => {
+    try {
+        const output = await fn(resolve, reject);
+        resolve(output);
+    } catch (error) {
+        reject(error);
+    }
+});
 
 const wrap = mainFunction => {
     const middlewares = [];
 
-    const controller = new MiddlewareController();
+    const controller = {
+        input: undefined,
+        output: undefined,
+        error: undefined,
+        wareIndex: 0,
+    };
 
     const run = async (...args) => {
         middlewares.reverse();
@@ -28,14 +30,7 @@ const wrap = mainFunction => {
                 const before = middlewares[controller.wareIndex++].before;
                 if (!before) continue;
 
-                const middlewareResponse = await new Promise(async (resolve, reject) => {
-                    try {
-                        const output = await before({ ...controller, resolve, reject });
-                        resolve(output);
-                    } catch (error) {
-                        reject(error);
-                    }
-                });
+                const middlewareResponse = await wrapInPromise((resolve, reject) => before({ ...controller, resolve, reject }));
 
                 if (Array.isArray(middlewareResponse)) controller.input = middlewareResponse;
             }
@@ -46,15 +41,8 @@ const wrap = mainFunction => {
                 const after = middlewares[--controller.wareIndex].after;
                 if (!after) continue;
 
-                const middlewareResponse = await new Promise(async (resolve, reject) => {
-                    try {
-                        const output = await after({ ...controller, resolve, reject });
-                        resolve(output);
-                    } catch (error) {
-                        reject(error);
-                    }
-                });
-    
+                const middlewareResponse = await wrapInPromise((resolve, reject) => after({ ...controller, resolve, reject }));
+
                 if (!isUndefined(middlewareResponse)) controller.output = middlewareResponse;
             }
     
@@ -66,15 +54,8 @@ const wrap = mainFunction => {
                 const onError = middlewares[--controller.wareIndex].onError;
                 if (!onError) continue;
 
-                const middlewareResponse = await new Promise(async (resolve, reject) => {
-                    try {
-                        const output = await onError({ ...controller, resolve, reject });
-                        resolve(output);
-                    } catch (error) {
-                        reject(error);
-                    }
-                });
-    
+                const middlewareResponse = await wrapInPromise((resolve, reject) => onError({ ...controller, resolve, reject }));
+
                 if (!isUndefined(middlewareResponse)) controller.error = middlewareResponse;
             }
 
@@ -107,7 +88,7 @@ const wrap = mainFunction => {
 
     run.before = beforeFn => {
         if (!isFunction(beforeFn)) {
-            throw new Error(`Middleware 'before' must be a function or undefined`);
+            throw new Error(`Middleware 'before' must be a function`);
         }
 
         middlewares.push({ before: beforeFn });
@@ -117,7 +98,7 @@ const wrap = mainFunction => {
 
     run.after = afterFn => {
         if (!isFunction(afterFn)) {
-            throw new Error(`Middleware 'after' must be a function or undefined`);
+            throw new Error(`Middleware 'after' must be a function`);
         }
 
         middlewares.push({ after: afterFn });
@@ -127,7 +108,7 @@ const wrap = mainFunction => {
 
     run.onError = onErrorFn => {
         if (!isFunction(onErrorFn)) {
-            throw new Error(`Middleware 'onError' must be a function or undefined`);
+            throw new Error(`Middleware 'onError' must be a function`);
         }
 
         middlewares.push({ onError: onErrorFn });

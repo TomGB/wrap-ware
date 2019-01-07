@@ -326,7 +326,7 @@ describe('wrap middleware', () => {
             wrap(main).before(beforeFn);
         };
 
-        expect(setup).toThrow(Error(`Middleware 'before' must be a function or undefined`));
+        expect(setup).toThrow(Error(`Middleware 'before' must be a function`));
     });
 
     it(`wrap().after() throws an error if the variable passed to after is not a function`, async () => {
@@ -336,7 +336,7 @@ describe('wrap middleware', () => {
             wrap(main).after(afterFn);
         };
 
-        expect(setup).toThrow(Error(`Middleware 'after' must be a function or undefined`));
+        expect(setup).toThrow(Error(`Middleware 'after' must be a function`));
     });
 
     it(`wrap().onError() throws an error if the variable passed to onError is not a function`, async () => {
@@ -346,6 +346,6 @@ describe('wrap middleware', () => {
             wrap(main).onError(onErrorFn);
         };
 
-        expect(setup).toThrow(Error(`Middleware 'onError' must be a function or undefined`));
+        expect(setup).toThrow(Error(`Middleware 'onError' must be a function`));
     });
 });
