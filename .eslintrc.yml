@@ -1,23 +1,4 @@
+extends: airbnb-base
 env:
-  browser: true
-  es6: true
-  node: true
   jasmine: true
   jest: true
-extends: 'eslint:recommended'
-parserOptions:
-  ecmaVersion: 2018
-rules:
-  indent:
-    - error
-    - 4
-  linebreak-style:
-    - error
-    - unix
-  quotes:
-    - error
-    - single
-    - { allowTemplateLiterals: true }
-  semi:
-    - error
-    - always
