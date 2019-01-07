@@ -8,22 +8,22 @@ const routerLogic = (url, body) => {
     if (url === '/invalid') {
         throw new Error(`${url} is invalid`);
     }
-}
+};
 
 const routerLogging = {
     before: ({ input: [url, body] }) => {
-        console.log('router was called with:')
+        console.log('router was called with:');
         console.log('url', url);
         console.log('body', body);
     },
     after: ({ output }) => {
-        console.log('router responded with', output)
-    }
+        console.log('router responded with', output);
+    },
 };
 
 const addIDToBody =  ({ input: [url, body], resolve: next }) => {
     const newBody = { ...body, id: 'banana' };
-    console.log('adding id to body')
+    console.log('adding id to body');
     next([url, newBody]);
 };
 

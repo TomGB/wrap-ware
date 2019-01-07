@@ -17,7 +17,7 @@ describe('wrap middleware', () => {
             before: () => {},
             after: () => {},
         };
-    })
+    });
 
     it('executes the middlewares in the correct order', async () => {
         const callOrder = [];
@@ -49,7 +49,7 @@ describe('wrap middleware', () => {
         const main = async () => {
             callOrder.push('main');
             Promise.resolve();
-        }
+        };
     
         middleware1.before = () => new Promise(resolve => {
             callOrder.push('middleware 1 before');
@@ -60,14 +60,14 @@ describe('wrap middleware', () => {
         });
 
         middleware1.after = async () => {
-            callOrder.push('middleware 1 after')
+            callOrder.push('middleware 1 after');
         };
         
         middleware2.before = async () => {
             callOrder.push('middleware 2 before');
         };
         middleware2.after = async () => {
-            callOrder.push('middleware 2 after')
+            callOrder.push('middleware 2 after');
         };
     
         const wrappedMain = wrap(main).use(middleware2).use(middleware1);
@@ -250,7 +250,7 @@ describe('wrap middleware', () => {
         middleware1 = {};
 
         const setup = () => {
-            wrap(main).use(middleware1)
+            wrap(main).use(middleware1);
         };
 
         expect(setup).toThrow(Error('Middleware must have a before, after or onError'));
@@ -262,7 +262,7 @@ describe('wrap middleware', () => {
         };
 
         const setup = () => {
-            wrap(main).use(middleware1)
+            wrap(main).use(middleware1);
         };
 
         expect(setup).toThrow(Error(`Middleware 'before' must be a function or undefined`));
@@ -307,7 +307,7 @@ describe('wrap middleware', () => {
         main = () => {
             callOrder.push('main');
             throw new Error('problem');
-        }
+        };
 
         const wrappedMain = wrap(main).onError(onError);
     

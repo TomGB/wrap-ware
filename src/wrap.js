@@ -84,7 +84,7 @@ const wrap = mainFunction => {
 
         middlewares.push(middleware);
         return run;
-    }
+    };
 
     run.before = beforeFn => {
         if (!isFunction(beforeFn)) {
@@ -94,7 +94,7 @@ const wrap = mainFunction => {
         middlewares.push({ before: beforeFn });
 
         return run;
-    }
+    };
 
     run.after = afterFn => {
         if (!isFunction(afterFn)) {
@@ -104,7 +104,7 @@ const wrap = mainFunction => {
         middlewares.push({ after: afterFn });
 
         return run;
-    }
+    };
 
     run.onError = onErrorFn => {
         if (!isFunction(onErrorFn)) {
@@ -114,9 +114,9 @@ const wrap = mainFunction => {
         middlewares.push({ onError: onErrorFn });
 
         return run;
-    }
+    };
 
     return run;
-}
+};
 
 module.exports = wrap;

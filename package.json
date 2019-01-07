@@ -4,7 +4,8 @@
   "description": "A middleware wrapper which works with promises",
   "main": "./index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "lint": "eslint ./src ./examples"
   },
   "repository": {
     "type": "git",
@@ -27,6 +28,7 @@
   },
   "homepage": "https://github.com/tomgb/wrap-ware#readme",
   "devDependencies": {
+    "eslint": "^5.12.0",
     "jest": "^23.6.0"
   }
 }
